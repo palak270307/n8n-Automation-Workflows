@@ -1,0 +1,227 @@
+{
+  "name": "AI ustomer Support Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -320,
+        -80
+      ],
+      "id": "424f1e8f-d154-4870-8f4c-d75770329028",
+      "name": "When chat message received",
+      "webhookId": "bac021a5-5d87-4d55-8be7-e662f8c32254"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -128,
+        -80
+      ],
+      "id": "540d89bc-f2f8-4e78-ae33-48c41cd174a1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -144,
+        192
+      ],
+      "id": "62e6b3f6-8506-47cb-9fd1-95f14a641f8b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to search customer orders, order status, tracking numbers, and delivery details in Airtable.",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appnOmRAqKtv8PfWE",
+          "mode": "list",
+          "cachedResultName": "AI Customer Support",
+          "cachedResultUrl": "https://airtable.com/appnOmRAqKtv8PfWE"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl1bNfZAIYnqKSpa",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appnOmRAqKtv8PfWE/tbl1bNfZAIYnqKSpa"
+        },
+        "filterByFormula": "=={Order_ID} = \"{{ $fromAI('Order_ID', 'The order ID extracted from the user prompt') }}\"",
+        "returnAll": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        208
+      ],
+      "id": "4828b4fd-468c-4e84-9e1e-6d06e1f0c1f2",
+      "name": "Search records in Airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "y6dWJVil0dDcfyJo",
+          "name": "AI Customer Support"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use this tool to search the knowledge base for information about [your topic — e.g. company policies, product docs, FAQs]. Input should be a natural language question or search query.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "demo-hf",
+          "mode": "list",
+          "cachedResultName": "demo-hf"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        96,
+        224
+      ],
+      "id": "8b1b5c8a-734f-4088-b9dc-69aee31b25c2",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "aP6b2M7k4yrGfxRq",
+          "name": "AIAGENT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        128
+      ],
+      "id": "962e7c23-e9b9-4b99-b283-8366e250c8c7",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "fWn7hYZpCn9YvlH0",
+          "name": "AIAGENT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        192,
+        432
+      ],
+      "id": "ea488ae8-3070-4d2d-b13d-560f623f9bcb",
+      "name": "Embeddings HuggingFace Inference",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "2ApEytDPMQKtsDsC",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records in Airtable": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Inference": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1f14e40c-94d5-4b79-9a15-07b19851f958",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "57f8c37b380a2c4d08cfa8ce91e32f7f8bb0fd75e6022386375f616060e60ebc"
+  },
+  "id": "yOi6pkPHfgIQskVi",
+  "tags": []
+}
